@@ -1,49 +1,91 @@
 # docs-br
 
-Este projeto implementa a validação, formatação e geração de documentos brasileiros, especificamente CPF e CNPJ, mas a lógica é a mesma para diversos outros documentos que utilizam a mesma classe de algoritmos de validação.
+Este projeto apresenta a implementação do algoritmo de validação de documentos brasileiros que utilizam a lógica de cálculo de módulo para validação dos dígitos verificadores. Na estrutura atual, ele atende tanto os documentos tradicionais que utilizam apenas números, como também os novos CNPJs que poderão conter letras a partir de 2026.
 
-A validação de documentos como CPF e CNPJ é feita utilizando algoritmos que verificam a conformidade dos dígitos verificadores. Esses dígitos são calculados a partir dos demais dígitos do documento utilizando um cálculo de módulo.
+## Implementações
 
-## Novo padrão de CNPJ
+Atualmente, as seguintes implementações estão disponíveis neste repositório:
 
-A partir de 2026, os CNPJs poderão conter números e letras. Este projeto já está preparado para lidar com essa mudança, garantindo a validação correta dos novos formatos de CNPJ.
+| Linguagem      | CPF | CNPJ | CNH | TE | PIS | CERT | RENAVAM |
+|----------------|-----|------|-----|----|-----|------|---------|
+| Go             | x   | x    |     |    |     |      |         |
+| Python         | x   | x    |     |    |     |      |         |
+| Python (Numpy) | x   | x    |     |    |     |      |         |
+| TypeScript     | x   | x    |     |    |     |      |         |
+| C++            |     |      |     |    |     |      |         |
+| C#             |     |      |     |    |     |      |         |
+| Elixir         |     |      |     |    |     |      |         |
+| Kotlin         |     |      |     |    |     |      |         |
+| Javascript     |     |      |     |    |     |      |         |
+| Java           |     |      |     |    |     |      |         |
+| Python (Spark) |     |      |     |    |     |      |         |
+| Ruby           |     |      |     |    |     |      |         |
+| Rust           |     |      |     |    |     |      |         |
+
+### Contribuições
+
+Sinta-se a vontade para contribuir com novas implementações em outras linguagens ou contribuir com melhorias nas existentes. Toda contribuição é muito bem-vinda!
+
+Para incluir um novo documento, abra uma branch com o nome do documento e da linguagem, por exemplo: `cpf-python`. Após a implementação, abra um pull request para a branch `main`.
+
+Importante que sua implementação siga todos os passos do algoritmo de validação descritos abaixo, assim como os métodos: `generate`, `validate` e `format`. Além de incluir testes unitários para garantir a qualidade da implementação.
 
 ## Algoritmo de Validação
 
-O algoritmo de validação segue os seguintes passos:
+O processo de validação dos documentos segue os seguintes passos:
 
-1. **Extrair os dígitos do documento**: Os dígitos são extraídos do documento, ignorando qualquer caractere de formatação.
-2. **Calcular os dígitos verificadores**: Utilizando o cálculo de módulo, os dígitos verificadores são gerados.
-3. **Comparar os dígitos verificadores**: Os dígitos verificadores calculados são comparados com os dígitos verificadores do documento.
-4. **Verificar a validade**: Se os dígitos verificadores coincidirem, o documento é considerado válido.
+1. **Conversão dos caracteres em números**  
+   - Cada caractere da string do documento é convertido em um número correspondente.  
+   - Para isso, subtrai-se o valor ASCII de `'0'` (48) do código ASCII de cada caractere.
+   - Como resultado:
+     - Os caracteres `'0'` a `'9'` são convertidos nos valores `0` a `9`.  
+     - Os caracteres `'A'` a `'Z'` geram valores começando em `17`, pois sua faixa ASCII começa em `65` (`65 - 48 = 17`).
 
-## Cálculo de Módulo
+2. **Verificação do comprimento**  
+   - O documento deve conter um número exato de caracteres (11 para CPF, 14 para CNPJ).  
+   - Caso contrário, ele é considerado inválido.
 
-O cálculo de módulo é uma operação matemática que encontra o resto da divisão de um número por outro. No contexto da validação de documentos, o cálculo de módulo é usado para gerar dígitos verificadores que garantem a integridade do documento.
+3. **Checagem de dígitos repetidos**  
+   - Documentos compostos por todos os dígitos idênticos são inválidos.
 
-Para CPF e CNPJ, o cálculo de módulo é feito da seguinte forma:
+4. **Cálculo dos dígitos verificadores**  
+   - Multiplicam-se os dígitos por uma sequência de pesos predefinidos para cada documento.  
+   - Os produtos são somados.  
+   - O módulo da soma é calculado (base 11 para CPF e CNPJ).  
+   - O resultado passa por uma função de transformação específica para determinar o dígito verificador.
 
-1. **Multiplicação por pesos**: Cada dígito do documento é multiplicado por um peso específico.
-    - **CPF**:
-      - Primeiro dígito verificador: (10, 9, 8, 7, 6, 5, 4, 3, 2)
-      - Segundo dígito verificador: (11, 10, 9, 8, 7, 6, 5, 4, 3, 2)
-    - **CNPJ**:
-      - Primeiro dígito verificador: (5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)
-      - Segundo dígito verificador: (6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)
+5. **Comparação dos dígitos verificadores**  
+   - Os dígitos verificadores calculados são comparados com os dígitos originais do documento.  
+   - Se coincidirem, o documento é válido. Caso contrário, é inválido.
 
-2. **Soma dos resultados**: Somar os resultados das multiplicações.
+## Variáveis utilizadas para cada tipo de documento
 
-3. **Cálculo do módulo**: Calcular o módulo da soma pelo número base (geralmente 11).
+### CPF (Cadastro de Pessoa Física)
 
-4. **Transformação do módulo**: Transformar o resultado do módulo em um dígito verificador.
-    - Se o resultado for menor que 2, o dígito verificador é 0.
-    - Caso contrário, o dígito verificador é 11 menos o resultado do módulo.
+- **Comprimento:** 11 caracteres
+- **Base para Módulo:** 11  
+- **Pesos:**  
+  - Primeiro dígito: `(10, 9, 8, 7, 6, 5, 4, 3, 2)`  
+  - Segundo dígito: `(11, 10, 9, 8, 7, 6, 5, 4, 3, 2)`  
+- **Transformação:**  
+  - Se o resultado for `< 2`, o dígito verificador é `0`.  
+  - Caso contrário, `11 - resultado`.  
+- **Máscara:** `###.###.###-##`
+- **Conjunto de Dígitos Aceitos:** `0-9`
 
-## Implementação
+---
 
-A implementação dos algoritmos de validação, formatação e geração de CPF e CNPJ está contida nas classes `DocBrCPF` e `DocBrCNPJ`. Ambas as classes herdam da classe base `DocBr`, que contém a lógica comum para manipulação dos documentos.
+### CNPJ (Cadastro Nacional da Pessoa Jurídica)
 
-- **DocBrCPF**: Implementa a lógica específica para CPF, incluindo os pesos e a máscara de formatação.
-- **DocBrCNPJ**: Implementa a lógica específica para CNPJ, incluindo os pesos e a máscara de formatação. Essa classe suporta caracteres alfanuméricos.
+- **Comprimento:** 14 caracteres
+- **Base para Módulo:** 11  
+- **Pesos:**  
+  - Primeiro dígito: `(5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)`  
+  - Segundo dígito: `(6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2)`  
+- **Transformação:**  
+  - Se o resultado for `< 2`, o dígito verificador é `0`.  
+  - Caso contrário, `11 - resultado`.  
+- **Máscara:** `##.###.###/####-##`  
+- **Conjunto de Dígitos Aceitos:** `0-9` (atualmente) e `0-9A-Z` (a partir de 2026).  
 
-Para mais detalhes sobre a implementação, consulte os arquivos de código na pasta `src`.
+---
