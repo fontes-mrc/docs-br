@@ -73,6 +73,8 @@ O processo de validação dos documentos segue os seguintes passos:
 - **Máscara:** `###.###.###-##`
 - **Conjunto de Dígitos Aceitos:** `0-9`
 
+Referência: [Wikipedia - Cadastro de Pessoas Físicas](https://pt.wikipedia.org/wiki/Cadastro_de_Pessoas_F%C3%ADsicas)
+
 ---
 
 ### CNPJ (Cadastro Nacional da Pessoa Jurídica)
@@ -87,5 +89,7 @@ O processo de validação dos documentos segue os seguintes passos:
   - Caso contrário, `11 - resultado`.  
 - **Máscara:** `##.###.###/####-##`  
 - **Conjunto de Dígitos Aceitos:** `0-9` (atualmente) e `0-9A-Z` (a partir de 2026).  
+
+Referência: [IN RFB nº 2.229/2024](http://normas.receita.fazenda.gov.br/sijut2consulta/link.action?idAto=141102)
 
 ---
