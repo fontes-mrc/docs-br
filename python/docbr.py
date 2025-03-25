@@ -109,3 +109,86 @@ class DocBrCNPJ(DocBr):
     _modulo_transformer = lambda x: 0 if x < 2 else 11 - x  # noqa: E731
     _charset = "0123456789ABCDEFGHIJKLMNOPQSRTUVWXYZ"
     _fmt_mask = "##.###.###/####-##"
+
+
+class DocBrCNH(DocBr):
+    _len = 11
+    _modulo = 11
+    _sequences = [
+        (9, 8, 7, 6, 5, 4, 3, 2, 1),
+        (1, 2, 3, 4, 5, 6, 7, 8, 9, 0),
+    ]
+    _modulo_transformer = lambda x: 0 if x > 9 else x  # noqa: E731
+    _charset = "0123456789"
+    _fmt_mask = "### ### ### ##"
+
+    @classmethod
+    def _get_validators(cls, digits: list[int]) -> list[int]:
+        validators: list[int] = []
+        temp_digits = digits.copy()
+
+        is_exception_case: bool = False
+        for i, seq in enumerate(cls._sequences):
+            pos = len(seq)
+            digit = sum([seq[i] * temp_digits[i] for i in range(pos)])
+            digit = digit % cls._modulo
+
+            if i == 0 and digit > 9:
+                is_exception_case = True
+
+            if i > 0 and is_exception_case:
+                digit += 9
+                if digit > 9:
+                    digit -= 2
+
+            digit = cls._modulo_transformer(digit)
+            temp_digits[pos] = digit
+            validators.append(digit)
+
+        return validators
+
+
+class DocBrTE(DocBr):
+    _len = 12
+    _modulo = 11
+    _sequences = [
+        (2, 3, 4, 5, 6, 7, 8, 9, 0, 0),
+        (0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 9),
+    ]
+    _modulo_transformer = lambda x: 0 if x == 10 else x  # noqa: E731
+    _charset = "0123456789"
+    _fmt_mask = "####.####.####"
+
+
+class DocBrPIS(DocBr):
+    _len = 11
+    _modulo = 11
+    _sequences = [
+        (3, 2, 9, 8, 7, 6, 5, 4, 3, 2),
+    ]
+    _modulo_transformer = lambda x: 0 if x < 2 else 11 - x  # noqa: E731
+    _charset = "0123456789"
+    _fmt_mask = "###.#####.##-#"
+
+
+class DocBrCertidao(DocBr):
+    _len = 32
+    _modulo = 11
+    _sequences = [
+        (2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+        (1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9),
+    ]
+    _modulo_transformer = lambda x: 1 if x == 10 else x  # noqa: E731
+    _charset = "0123456789"
+    _fmt_mask = "######.##.##.####.#.#####.###.#######-##"
+
+
+class DocBrRENAVAM(DocBr):
+    _len = 11
+    _modulo = 11
+    _sequences = [
+        (3, 2, 9, 8, 7, 6, 5, 4, 3, 2),
+    ]
+    _modulo_transformer = lambda x: 0 if x < 2 else 11 - x  # noqa: E731
+    _charset = "0123456789"
+    _fmt_mask = "###.###.###-#"

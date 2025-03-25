@@ -9,7 +9,7 @@ Atualmente, as seguintes implementações estão disponíveis neste repositório
 | Linguagem      | CPF | CNPJ | CNH | TE | PIS | CERT | RENAVAM |
 |----------------|-----|------|-----|----|-----|------|---------|
 | Go             | x   | x    |     |    |     |      |         |
-| Python         | x   | x    |     |    |     |      |         |
+| Python         | x   | x    | x   | x  | x   | x    | x       |
 | Python (Numpy) | x   | x    |     |    |     |      |         |
 | TypeScript     | x   | x    |     |    |     |      |         |
 | C++            |     |      |     |    |     |      |         |
@@ -93,3 +93,86 @@ Referência: [Wikipedia - Cadastro de Pessoas Físicas](https://pt.wikipedia.org
 Referência: [IN RFB nº 2.229/2024](http://normas.receita.fazenda.gov.br/sijut2consulta/link.action?idAto=141102)
 
 ---
+
+### CNH (Carteira Nacional de Habilitação)
+
+- **Comprimento:** 11 caracteres
+- **Base para Módulo:** 11
+- **Pesos:**  
+  - Primeiro dígito: `(9, 8, 7, 6, 5, 4, 3, 2, 1)`  
+  - Segundo dígito: `(1, 2, 3, 4, 5, 6, 7, 8, 9)`
+- **Transformação:**
+  - Em ambos os dígitos, se o resultado for maior que `9`, o dígito verificador é `0`.
+  - Caso o segundo dígito seja maior que `9`, o segundo dígito deverá adicionar `9` e, caso o resultado da soma seja maior que `9`, então subtrair `2` do resultado.
+- **Máscara:** `### ### ### ##`
+- **Conjunto de Dígitos Aceitos:** `0-9`
+
+Referências:
+
+- [Resolução nº 192/2006](https://www.detran.sp.gov.br/wps/wcm/connect/678f4bad-63d8-499a-9a9f-efcf33c8e827/resolucao_192_06.pdf?MOD=AJPERES&CVID=mLYM0p5)
+- [Forum DevMedia](https://www.devmedia.com.br/forum/validacao-do-numero-de-registro-de-cnh/354889)
+- [Tudo em AdvPL](https://siga0984.wordpress.com/2019/05/01/algoritmos-validacao-de-cnh/)
+
+### TE (Título de Eleitor)
+
+- **Comprimento:** 12 caracteres
+- **Base para Módulo:** 11
+- **Pesos:**
+  - Primeiro dígito: `(2, 3, 4, 5, 6, 7, 8, 9, 0, 0)`
+  - Segundo dígito: `(0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 9)`
+- **Transformação:**
+  - Se o resultado for `10`, o dígito verificador é `0`.
+  - Caso contrário, o próprio resultado.
+- **Máscara:** `####.####.####`
+- **Conjunto de Dígitos Aceitos:** `0-9`
+
+Referências:
+
+- [Tudo em AdvPL](https://siga0984.wordpress.com/2019/05/01/algoritmos-validacao-de-titulo-de-eleitor/)
+- [cadcobol.com.br](https://www.cadcobol.com.br/cobol_dv_calcula_titulo_eleitor.htm)
+
+### PIS/PASEP (Programa de Integração Social / Programa de Formação do Patrimônio do Servidor Público)
+
+- **Comprimento:** 11 caracteres
+- **Base para Módulo:** 11
+- **Pesos:**
+  - `(3, 2, 9, 8, 7, 6, 5, 4, 3, 2)`
+- **Transformação:**
+  - Se o resultado for `< 2`, o dígito verificador é `0`.
+  - Caso contrário, `11 - resultado`.
+- **Máscara:** `###.#####.##-#`
+- **Conjunto de Dígitos Aceitos:** `0-9`
+
+Referências:
+
+- [cadcobol.com.br](https://www.cadcobol.com.br/cobol_dv_verifica_pis_pasep.htm)
+- [macoratti.net](https://www.macoratti.net/alg_pis.htm)
+
+### CERT (Certidão de Nascimento, Casamento e Óbito)
+
+- **Comprimento:** 32 caracteres
+- **Base para Módulo:** 11
+- **Pesos:**
+  - `(2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)`
+  - `(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)`
+- **Transformação:**
+  - Se o resultado for `10`, o dígito verificador é `1`.
+  - Caso contrário, o próprio resultado.
+- **Máscara:** `######.##.##.####.#.#####.###.#######-##`
+- **Conjunto de Dígitos Aceitos:** `0-9`
+
+Referência: [validator-docs](https://github.com/geekcom/validator-docs/blob/master/src/validator-docs/Rules/Certidao.php)
+
+### RENAVAM (Registro Nacional de Veículos Automotores)
+
+- **Comprimento:** 11 caracteres
+- **Base para Módulo:** 11
+- **Pesos:**
+  - `(3, 2, 9, 8, 7, 6, 5, 4, 3, 2)`
+- **Transformação:**
+  - Se o resultado for `< 2`, o dígito verificador é `0`.
+  - Caso contrário, `11 - resultado`.
+- **Máscara:** `###.###.###-#`
+- **Conjunto de Dígitos Aceitos:** `0-9`
+
+Referência: [validator-docs](https://github.com/geekcom/validator-docs/blob/master/src/validator-docs/Rules/Renavam.php)
